@@ -1,0 +1,20 @@
+{
+
+    "manifest_version":2,
+    "name":"Calculator",
+    "version":"6.9.420",
+    "description":"Simple calc",
+    "author":"SUmof1",
+    "icons":{
+        "128": "calculator.png"
+    },
+    "browser_action":{
+        "default_popup":"popup.html",
+        "default_icon":"calculator.png",
+        "default_title":"a calculator lol"
+    },
+    "permissions":["activeTab"],
+    "background":{
+        "scripts":["main.js"]
+    }
+}
