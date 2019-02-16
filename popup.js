@@ -17,15 +17,12 @@ window.addEventListener( 'mouseup', function() {
 })
 
 document.addEventListener("DOMContentLoaded", function(event) {
+  const display = document.querySelector('.calculator__screen');
+  const subDisplay = document.querySelector('.calculator__subscreen');
+  const histDisplay = document.querySelector('.calculator__history'); 
+  const hist = [];
+  let   res = ''; 
 
-  // Key variables
-  const display = document.querySelector('.calculator__screen'); // Screen with result
-  const subDisplay = document.querySelector('.calculator__subscreen'); // Small display with current calculation
-  const histDisplay = document.querySelector('.calculator__history'); // Display with history of calculations
-  const hist = []; // Array with history of calculations
-  let   res = ''; // Calculation result of two numbers
-
-  // Regexp's
   const numOperEqSign = /^\d+(\*|\/|\-|\+)\=$/;
   const screenClear = /^(\-?(?:\d*\.)?\d+(\*|\/|\-|\+)(?:\d*\.)?\d{1})$/;
   const numLength = /^(\d+\.\d+){16}$|(\d+){17}/;
@@ -37,30 +34,23 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
   const buttons = document.querySelectorAll('.calc-btn');
 
-  // Adding click eventlistner to every button
   for (let i = 0; i < buttons.length; i++) {
 
     buttons[i].addEventListener('click', function() {
 
-      // Clear display after result with 'e+'
       if ( subDisplay.textContent === 'This is the limit' ) {
         subDisplay.textContent = ''
       }
 
-      // Clear display after equal sign pressed
       if ( res === '' ) {
         display.textContent = ''
       }
 
-      document.querySelector('[data-oper="."]').removeAttribute('disabled'); // Switch '.' button back
+      document.querySelector('[data-oper="."]').removeAttribute('disabled');
+      subDisplay.textContent += this.getAttribute('value') || this.getAttribute('data-oper');
+      res += this.getAttribute('value') || this.getAttribute('data-oper');
+      subDisplay.scrollLeft = subDisplay.scrollWidth + 20
 
-      subDisplay.textContent += this.getAttribute('value') || this.getAttribute('data-oper'); // Small display
-
-      res += this.getAttribute('value') || this.getAttribute('data-oper'); // Expression of two operands and operator
-
-      subDisplay.scrollLeft = subDisplay.scrollWidth + 20 //Scroll subdisplay to right automatically
-
-      // Count result if there is only one operand
       if ( this.getAttribute('data-oper') === '=' && numEqSign.test(res) ) {
         display.textContent = res.slice(0, res.length - 1);
         subDisplay.textContent += res.slice(0, res.length - 1);
@@ -70,7 +60,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
         addExp(histDisplay, hist);
       }
 
-      // Count result if there is only one operand and operator
       if ( this.getAttribute('data-oper') === '=' && numOperEqSign.test(res) ) {
         display.textContent = res.slice(0, res.length - 2);
         subDisplay.textContent = subDisplay.textContent.slice(0, subDisplay.textContent.length - 2) + this.getAttribute('data-oper') + res.slice(0, res.length - 2);
@@ -80,77 +69,64 @@ document.addEventListener("DOMContentLoaded", function(event) {
         addExp(histDisplay, hist);
       }
 
-      // Clear screen after result of expression
       if ( screenClear.test(res) && res[res.length - 2] !== '.' ) {
         display.textContent = ''
       }
 
-      display.textContent += this.getAttribute('value') || ''; // Main display
+      display.textContent += this.getAttribute('value') || '';
 
-      // 'C' button
       if ( this.getAttribute('value') === 'C' ) {
         res = '';
         display.textContent = '';
         subDisplay.textContent = '';
       }
-
-      // Set maximum digit length and prohibit digits like 1.2.3
       if ( numLength.test(subDisplay.textContent) || numDotNumDot.test(subDisplay.textContent) || display.textContent.length === 16) {
         subDisplay.textContent = subDisplay.textContent.slice(0, subDisplay.textContent.length - 1);
         display.textContent = display.textContent.slice(0, display.textContent.length-1);
         res = res.slice(0, res.length-1);
       }
-
-      // Check if there is more than 1 operator or dot at row and cut it
       if ( twoOpers.test(subDisplay.textContent) ) {
         subDisplay.textContent = subDisplay.textContent.slice(0, subDisplay.textContent.length-2) + this.getAttribute('data-oper') || '.';
         res = res.slice(0, res.length-2) + this.getAttribute('data-oper') || '.';
-        // Toggle dot on main screen depending on operator or dot on subscreen
         if ( /^\d+\.$/.test(display.textContent) ) {
           display.textContent = display.textContent.slice(0, display.textContent.length-1) + (this.getAttribute('value') || '');
         }
       }
 
-      // Block dot if last char is operator
       if ( operands.indexOf(subDisplay.textContent[subDisplay.textContent.length-1]) > -1) {
         document.querySelector('[data-oper="."]').setAttribute("disabled", "disabled");
       }
 
-      // Check if operator or dot is first char and cut it
       if ( subDisplay.textContent.indexOf(this.getAttribute('data-oper')) === 0 ) {
         subDisplay.textContent = subDisplay.textContent.slice(1, subDisplay.textContent.length);
         res = res.slice(1, res.length);
         display.textContent = display.textContent.slice(1, res.length);
       }
 
-      // Slice unnecessary dot
       if ( numDotNumDot.test(display.textContent) || /\.{2,}/.test(display.textContent) ) {
         display.textContent = display.textContent.slice(0, display.textContent.length-1);
       }
 
       if ( checkIndex(res)>0 ) {
 
-        let middleIndex = checkIndex(res),  //Find index of operator in expression
-            operand = res[middleIndex],     //Find an operator
-            rightSearch = middleIndex + 1,     //Define right part of expression
+        let middleIndex = checkIndex(res),
+            operand = res[middleIndex],
+            rightSearch = middleIndex + 1,
             right = '';
 
-          //Parse right part of expression
           while ( rightSearch < res.length - 1 ) {
             right = right + res[rightSearch];
             rightSearch++;
           }
 
-        let leftSearch = middleIndex - 1,   //Define left part of expression
+        let leftSearch = middleIndex - 1, 
             left = '';
 
-          //Parse left part of expression
           while ( leftSearch >= 0 ) {
             left = res[leftSearch] + left;
             leftSearch--;
           }
 
-        // Count an expression depending on operator
         switch ( operand ) {
 
           case '+':
@@ -175,7 +151,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
         }
 
         if ( res == Infinity || isNaN(res) ) {
-          display.textContent = 'Don\'t divide by zero!';
+          display.textContent = 'y u divide by zero ;-;';
           res = '';
           subDisplay.textContent = ''
         }
@@ -197,7 +173,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
         if ( res.indexOf('e')>-1 ) {
           display.textContent = res.slice(0, res.length - 1);
           res = '';
-          subDisplay.textContent = 'This is the limit';
+          subDisplay.textContent = 'you have reached the limit';
         }
       }
     });
@@ -215,13 +191,13 @@ function checkIndex (str) {
   const expFull = /(\-?(?:\d*\.)?\d+(\*|\/|\-|\+)(?:\d*\.)?\d+)/;
 
   for ( let i = 0; i < str.length; i++ ) {
-    //Check if expression pass regexp: number or fraction, operator, number or fraction
+    
     if ( str.match(expExtend) ) {
      foundExp = str.match(expFull)[0];
     }
   }
   if ( foundExp ) {
-    //Check if char in expression is operator and find its index
+    
     for( let j = 0; j < foundExp.length; j++ ) {
       if ( operands.indexOf(foundExp[j]) > -1 ) {
         foundIndex = foundExp.lastIndexOf(foundExp[j]); // lastIndexOf because of minus
