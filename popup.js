@@ -1,20 +1,6 @@
-"use strict"
 
 const btnWrap = document.querySelectorAll('.calc-btn-wrap')
 
-// Pressing animation
-
-for ( let i = 0; i < btnWrap.length; i++ ) {
-  btnWrap[i].addEventListener( 'mousedown', function() {
-    this.classList.add('calc-btn-wrap_toggle');
-  })
-};
-
-window.addEventListener( 'mouseup', function() {
-  for (let i = 0; i < btnWrap.length; i++) {
-    btnWrap[i].classList.remove('calc-btn-wrap_toggle');
-  }
-})
 
 document.addEventListener("DOMContentLoaded", function(event) {
   const display = document.querySelector('.calculator__screen');
@@ -233,7 +219,7 @@ function addExp(screen, hist) {
   for ( let x = 0; x < hist.length; x++ ) {
     let item = document.createElement("div");
     item.className = 'calculator__history-item';
-    item.innerHTML = `<span> ${x+1}.</span>${hist[x]}`;
+    item.innerHTML = `<span> ${x+1})` + " " + `</span>${hist[x]}`;
     screen.appendChild(item);
   }
 }

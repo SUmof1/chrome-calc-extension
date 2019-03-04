@@ -14,7 +14,11 @@
         "default_title":"a calculator lol"
     },
     "permissions":["activeTab"],
-    "background":{
-        "scripts":["main.js"]
-    }
+    "content_scripts": [
+        {
+            "matches": ["<all_urls>"],
+            "css": ["popup.css"],
+            "js": ["popup.js"]
+        }
+    ]
 }
